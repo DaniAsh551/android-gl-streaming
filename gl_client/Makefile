@@ -1,4 +1,5 @@
-CFLAGS=-O3 -Wall -I../common -I. -I./include -fPIC -g
+CC ?= gcc
+CFLAGS=-O3 -Wall -I../common -I. -I./include -fPIC -g -fcommon -L/usr/include
 
 # Use X11
 CFLAGS+=-DUSE_X11
@@ -22,22 +23,22 @@ EXES=$(LIB_GLES)
 all: $(EXES)
 
 fifo.o: ../common/fifo.c ../common/fifo.h
-	gcc -c -o fifo.o $(CFLAGS) ../common/fifo.c
+	$(CC) -c -o fifo.o $(CFLAGS) ../common/fifo.c
 
 server.o: ../common/server.c ../common/server.h fifo.o
-	gcc -c -o server.o $(CFLAGS) ../common/server.c
+	$(CC) -c -o server.o $(CFLAGS) ../common/server.c
 
 clientegl.o: clientegl.c include/EGL/egl.h
-	gcc -c -o clientegl.o $(CFLAGS) clientegl.c
+	$(CC) -c -o clientegl.o $(CFLAGS) clientegl.c
 
 clientgles.o: clientgles.c include/GLES2/gl2.h
-	gcc -c -o clientgles.o $(CFLAGS) clientgles.c
+	$(CC) -c -o clientgles.o $(CFLAGS) clientgles.c
 
 glclient.o: glclient.c glclient.h ../common/gls_command.h server.o
-	gcc -c -o glclient.o $(CFLAGS) glclient.c
+	$(CC) -c -o glclient.o $(CFLAGS) glclient.c
 
 $(LIB_GLES): $(OBJS)
-	gcc -shared -o $(LIB_GLES) $(CFLAGS) $(OBJS) -Wl,-init,gls_init_library,--no-undefined $(LIBS)
+	$(CC) -shared -o $(LIB_GLES) $(CFLAGS) $(OBJS) -Wl,-init,gls_init_library,--no-undefined $(LIBS)
 
 install:
 	mkdir -p $(GLS_LIB_DIR)
